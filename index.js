@@ -4,14 +4,16 @@ const http = require('http');
 const socketio = require('socket.io');
 const server = http.createServer(app);
 const io = socketio(server);
-
-
+const connect = require("./config/database-config");
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
 
-
+socket.on('msg_send', (data)=>{
+    console.log(data );
+})
     io.on('from_client', () =>{
         console.log("event coming from client");
+        io.emit('msg_rcvd',data);
     })
 
 
@@ -23,6 +25,8 @@ io.on('connection', (socket) => {
 
 app.use('/', express.static(__dirname + '/public'));
 
-server.listen(3000, () =>{
+server.listen(3000, async() =>{
     console.log(`Server started`);
+    await connect();
+    console.log("mongodb connected");
 });
